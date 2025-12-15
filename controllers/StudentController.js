@@ -7,7 +7,8 @@ const createTution = async (req, res) => {
         const finalData = {
             ...data,
             email: req.user.email,
-            status: 'pending'
+            status: 'pending',
+            createdAt: new Date(),
         }
         const result = await StudentModel.insertOne(finalData);
         if (result.acknowledged) {
@@ -21,7 +22,6 @@ const createTution = async (req, res) => {
                 message: "Data not save",
             })
         }
-
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -37,7 +37,7 @@ const allTutions = async (req, res) => {
         }).toArray();
         return res.status(200).json({
             success: true,
-            result
+            data: result
         })
     }catch(error){
         res.status(500).json({

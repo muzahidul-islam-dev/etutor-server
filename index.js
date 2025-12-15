@@ -12,6 +12,10 @@ app.use('/api/user', routes.userRoutes)
 app.use('/api/student', routes.studentRoutes)
 
 
+// Adimin Routes
+app.use('/api/admin', routes.adminRoutes)
+
+
 app.listen(config.PORT, () => {
     console.log(`Server is running on ${port}`)
 })
