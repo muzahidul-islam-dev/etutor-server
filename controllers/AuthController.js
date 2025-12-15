@@ -1,5 +1,5 @@
 import db from "../connection/mongodb.js"
-const UserModel = db.collection('user')
+const UserModel = db.collection('users')
 
 const registerUser = async (req, res) => {
     try {

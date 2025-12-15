@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/user', routes.userRoutes)
-app.use('/api/student', routes.userRoutes)
+app.use('/api/student', routes.studentRoutes)
 
 
 app.listen(config.PORT, () => {
