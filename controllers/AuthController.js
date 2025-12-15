@@ -26,21 +26,38 @@ const registerUser = async (req, res) => {
     }
 }
 
-const roleCheck = async (req, res) => {
-    try{
-        const email = req?.query?.email;
-        if(!email) return res.status(401).json({
-            success: false,
-            message: 'You are not valied user.'
+const loginUser = async (req, res) => {
+    try {
+        const data = req.body;
+        const existUser = await UserModel.findOne({
+            email: data?.email
         })
 
-        const checkUser = await UserModel.findOne({
-            email: email
+        if(existUser){
+            return res.status(200).json({
+                success: true,
+                message: "User login successfully"
+            })
+        }
+        await UserModel.insertOne(data);
+        res.status(200).json({
+            success: true,
+            message: 'User registration successfully'
         })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+const roleCheck = async (req, res) => {
+    try{
         return res.status(200).json({
             success: true,
             data: {
-                role: checkUser?.role
+                role: req.userRole
             }
         })
     }catch(error){
@@ -53,5 +70,6 @@ const roleCheck = async (req, res) => {
 
 export const AuthController = {
     registerUser,
-    roleCheck
+    roleCheck,
+    loginUser
 }
