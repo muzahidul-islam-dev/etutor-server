@@ -24,10 +24,12 @@ studentRoutes.get('/tuition/all',verifyAuth, authorized('student'),StudentContro
 
 // Admin Routes
 adminRoutes.get('/tution/all-tution-list', verifyAuth, authorized('admin'), AdminController.allTutionLists);
+adminRoutes.get('/tution/all-tution-list', verifyAuth, authorized('admin'), AdminController.allTutionLists);
 adminRoutes.patch('/tution/change-status', verifyAuth, authorized('admin'), AdminController.changeStatus);
 
 // Public Routes
 publicRoutes.get('/list', PublicController.tuitionLists);
+publicRoutes.get('/list/:id', PublicController.singleTution);
 export const routes = {
     userRoutes,
     studentRoutes,
