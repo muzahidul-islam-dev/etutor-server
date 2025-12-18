@@ -10,7 +10,7 @@ app.use(express.json())
 
 app.use('/api/user', routes.userRoutes)
 app.use('/api/student', routes.studentRoutes)
-
+app.use('/api/tutor', routes.tutorRoutes)
 
 // Adimin Routes
 app.use('/api/admin', routes.adminRoutes)
@@ -18,7 +18,8 @@ app.use('/api/admin', routes.adminRoutes)
 
 // public routes
 app.use('/api/tution', routes.publicRoutes);
-
+app.use('/api/tutors', routes.publicTutors);
+app.use('/api/home', routes.homeRoutes);
 
 app.listen(config.PORT, () => {
     console.log(`Server is running on ${port}`)
