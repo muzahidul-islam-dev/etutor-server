@@ -245,12 +245,35 @@ const paymentVerify = async (req, res) => {
                 data: paymentInfo,
                 purpose: purpose
             })
-        }else{
+        } else {
             res.status(200).json({
                 success: false,
                 message: 'No valied data'
             })
         }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+const paymentHistory = async (req, res) => {
+    try {
+
+        const data = await TuitionModel.aggregate([
+            {
+                $match: {
+                    email: req.user.email,
+                    status: 'completed'
+                }
+            }
+        ]).toArray();
+        return res.status(200).json({
+            success: true,
+            data: data
+        })
 
     } catch (error) {
         res.status(500).json({
@@ -266,5 +289,6 @@ export const StudentController = {
     appliedTutors,
     appliedTutorsByTuition,
     studentPayment,
-    paymentVerify
+    paymentVerify,
+    paymentHistory
 }

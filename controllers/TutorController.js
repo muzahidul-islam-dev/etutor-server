@@ -154,6 +154,71 @@ const deleteApplication = async (req, res) => {
     }
 }
 
+const onGoing = async (req, res) => {
+    try {
+        const data = await ApplyModel.aggregate([
+            {
+                $match: {
+                    user: req.user.email,
+                    status: 'completed'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'tutions',
+                    localField: 'tuition_id',
+                    foreignField: '_id',
+                    as: 'tutions'
+                }
+            },
+            {
+                $unwind: '$tutions'
+            }
+        ]).toArray();
+        return res.status(200).json({
+            success: true,
+            data: data
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const revenewHistory = async (req, res) => {
+    try {
+        const data = await ApplyModel.aggregate([
+            {
+                $match: {
+                    user: req.user.email
+                }
+            },
+            {
+                $lookup: {
+                    from: 'tutions',
+                    localField: 'tuition_id',
+                    foreignField: '_id',
+                    as: 'tutions'
+                }
+            },
+            {
+                $unwind: "$tutions"
+            }
+        ]).toArray()
+        return res.status(200).json({
+            success: true,
+            data: data
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 
 
 
@@ -164,5 +229,7 @@ export const TutorController = {
     myApplications,
     updateApplication,
     deleteApplication,
-    editApplication
+    editApplication,
+    onGoing,
+    revenewHistory
 }

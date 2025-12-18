@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import db from "../connection/mongodb.js"
 
 const TutionModel = db.collection('tutions');
-
+const UserModel = db.collection('users')
 
 const allTutionLists = async (req, res) => {
     try {
@@ -65,7 +65,49 @@ const changeStatus = async (req, res) => {
     }
 }
 
+const users = async (req, res) => {
+    try {
+        const data = await UserModel.find({
+            email: {$ne: req.user.email}
+        }).toArray();
+        return res.status(200).json({
+            success: true,
+            data: data
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+const updateUser = async (req, res) => {
+    try {
+        const { role } = req.body;
+        await UserModel.updateOne(
+            {
+                _id: new ObjectId(req.params.id)
+            },
+            {
+                $set: {
+                    role: role
+                }
+            }
+        )
+        return res.status(200).json({
+            success: true,
+            message: 'User update successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
 export const AdminController = {
     allTutionLists,
-    changeStatus
+    changeStatus,
+    users,
+    updateUser
 }
