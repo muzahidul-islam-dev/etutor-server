@@ -105,9 +105,28 @@ const updateUser = async (req, res) => {
         })
     }
 }
+const deleteUser = async (req, res) => {
+    try {
+        await UserModel.deleteOne({
+            _id: new ObjectId(req.params.id)
+        })
+        return res.status(200).json({
+            success: true,
+            message: 'User deleted successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+
 export const AdminController = {
     allTutionLists,
     changeStatus,
     users,
-    updateUser
+    updateUser,
+    deleteUser
 }
