@@ -1,3 +1,4 @@
 .env
 node_modules
 # connection/firebase/etutor-9e4cc-firebase-adminsdk-fbsvc-14bdd5f10e.json
+.vercel

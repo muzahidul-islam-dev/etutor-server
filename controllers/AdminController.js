@@ -3,6 +3,7 @@ import db from "../connection/mongodb.js"
 
 const TutionModel = db.collection('tutions');
 const UserModel = db.collection('users')
+const ApplyModel = db.collection('applies')
 
 const allTutionLists = async (req, res) => {
     try {
@@ -68,7 +69,7 @@ const changeStatus = async (req, res) => {
 const users = async (req, res) => {
     try {
         const data = await UserModel.find({
-            email: {$ne: req.user.email}
+            email: { $ne: req.user.email }
         }).toArray();
         return res.status(200).json({
             success: true,
@@ -122,11 +123,61 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const revenewHistory = async (req, res) => {
+    try {
+        const data = await ApplyModel.aggregate([
+            {
+                $match: {
+                    status: 'completed'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'tutions',
+                    localField: 'tuition_id',
+                    foreignField: '_id',
+                    as: 'tuition'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$tuition',
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: 'email',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: false
+                }
+            }
+        ]).toArray()
+        return res.status(200).json({
+            success: true,
+            data: data
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 
 export const AdminController = {
     allTutionLists,
     changeStatus,
     users,
     updateUser,
-    deleteUser
+    deleteUser,
+    revenewHistory
 }

@@ -15,7 +15,7 @@ const createTution = async (req, res) => {
             status: 'pending',
             createdAt: new Date(),
         }
-        const result = await StudentModel.insertOne(finalData);
+        const result = await TuitionModel.insertOne(finalData);
         if (result.acknowledged) {
             res.status(200).json({
                 success: true,

@@ -192,7 +192,8 @@ const revenewHistory = async (req, res) => {
         const data = await ApplyModel.aggregate([
             {
                 $match: {
-                    user: req.user.email
+                    user: req.user.email,
+                    status: 'completed'
                 }
             },
             {

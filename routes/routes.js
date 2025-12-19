@@ -40,6 +40,7 @@ adminRoutes.patch('/tution/change-status', verifyAuth, authorized('admin'), Admi
 adminRoutes.get('/users', verifyAuth, authorized('admin'), AdminController.users)
 adminRoutes.patch('/user/update/:id', verifyAuth, authorized('admin'), AdminController.updateUser)
 adminRoutes.delete('/user/delete/:id', verifyAuth, authorized('admin'), AdminController.deleteUser)
+adminRoutes.get('/revenew', verifyAuth, authorized('admin'), AdminController.revenewHistory);
 // Tutor Routes
 tutorRoutes.post('/apply', verifyAuth, authorized('tutor'), TutorController.applyTuition)
 tutorRoutes.get('/my-applications', verifyAuth, authorized('tutor'), TutorController.myApplications);
