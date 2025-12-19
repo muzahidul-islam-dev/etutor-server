@@ -7,7 +7,7 @@ const tuitionLists = async (req, res) => {
     try {
         
         const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limitPerPage = 2;
+        const limitPerPage = 10;
         const sortBy = req.query.sortby;
         const skip = (page - 1) * limitPerPage;
 
