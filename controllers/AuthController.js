@@ -68,8 +68,36 @@ const roleCheck = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    try{
+        const {name, email, photo_url, number} = req.body;
+        const result = await UserModel.updateOne(
+            {
+                email: email
+            },
+            {
+                $set: {
+                    name: name,
+                    image: photo_url,
+                    number: number
+                }
+            }
+        )
+        res.status(200).json({
+            success: true,
+            message: 'Profile update successfully'
+        })
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
 export const AuthController = {
     registerUser,
     roleCheck,
-    loginUser
+    loginUser,
+    updateProfile
 }

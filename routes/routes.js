@@ -20,6 +20,7 @@ const tutorRoutes = express.Router();
 userRoutes.post('/register', AuthController.registerUser);
 userRoutes.post('/login', AuthController.loginUser);
 userRoutes.get('/role-check', verifyAuth, AuthController.roleCheck);
+userRoutes.patch('/update-profile', verifyAuth, AuthController.updateProfile)
 
 
 
