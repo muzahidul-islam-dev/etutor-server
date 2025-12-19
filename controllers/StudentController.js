@@ -94,6 +94,7 @@ const appliedTutors = async (req, res) => {
                     appliedSalary: "$applies.salary",
                     appliedAt: "$applies.createdAt",
                     status: "$applies.status",
+                    tuitionsId: "$applies._id",
                 }
             },
             {
@@ -104,6 +105,7 @@ const appliedTutors = async (req, res) => {
                     appliedSalary: { $first: "$appliedSalary" },
                     status: { $first: "$status" },
                     date: { $first: "$appliedAt" },
+                    tuitionsId: { $first: "$tuitionsId" },
                 }
             }
         ]).toArray();
@@ -169,16 +171,16 @@ const appliedTutorsByTuition = async (req, res) => {
 const studentPayment = async (req, res) => {
     try {
         const id = req.params.id;
-        const tutorEmail = await TutorEmail.findOne({
+        const appliesDetails = await AppliesModel.findOne({
             _id: new ObjectId(id)
         })
-        const appliesDetails = await AppliesModel.findOne({
-            user: tutorEmail.email
+        const tutorEmail = await TutorEmail.findOne({
+            email: appliesDetails.user
         })
+        // return res.json(tutorEmail)
         const tuitionDetails = await TuitionModel.findOne({
             _id: new ObjectId(appliesDetails.tuition_id)
         })
-        // return res.json({data: appliesDetails._id})
         const amount = parseInt(appliesDetails.salary) * 100
         const payment = await stripe.checkout.sessions.create({
             success_url: `${config.SUCCESS_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -197,7 +199,7 @@ const studentPayment = async (req, res) => {
             customer_email: tutorEmail.email,
             mode: 'payment',
             metadata: {
-                tuitionId: appliesDetails.user
+                tuitionsId: id
             },
             cancel_url: `${config.SUCCESS_URL}/payment-cancel`
         })
@@ -219,15 +221,15 @@ const paymentVerify = async (req, res) => {
     try {
         const paymentInfo = await stripe.checkout.sessions.retrieve(req.params.id)
         if (paymentInfo.payment_status == 'paid') {
-            const tutorEmail = paymentInfo.metadata.tuitionId;
+            const tuitionsId = paymentInfo.metadata.tuitionsId;
             const appliesData = await AppliesModel.findOne({
-                user: tutorEmail
+                _id: new ObjectId(tuitionsId)
             });
             const purpose = await TuitionModel.findOne({
                 _id: new ObjectId(appliesData?.tuition_id)
             })
             await AppliesModel.updateOne({
-                user: tutorEmail
+                _id: new ObjectId(tuitionsId)
             }, {
                 $set: {
                     status: 'completed'
@@ -243,7 +245,12 @@ const paymentVerify = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: paymentInfo,
-                purpose: purpose
+                purpose: purpose,
+                testData: {
+                    purpose,
+                    appliesData,
+                    tuitionsId
+                }
             })
         } else {
             res.status(200).json({
@@ -283,6 +290,81 @@ const paymentHistory = async (req, res) => {
     }
 }
 
+const updateTution = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { title, subject, location, salary } = req.body;
+        const result = await TuitionModel.updateOne(
+            {
+                _id: new ObjectId(id)
+            },
+            {
+                $set: {
+                    title: title,
+                    subject: subject,
+                    location: location,
+                    salary: salary
+                }
+            }
+        );
+
+        if (result.acknowledged) {
+            res.status(200).json({
+                success: true,
+                message: 'Tution update successfully'
+            })
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Data not save",
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+const rejectTutor = async (req, res) => {
+    try {
+        await AppliesModel?.updateOne({
+            _id: new ObjectId(req.params.id)
+        },{
+            $set: {
+                status: 'rejected'
+            }
+        })
+        return res.status(200).json({
+            success: true,
+            message: 'Application rejected'
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+const deleteTution = async (req, res) => {
+    try {
+        await TuitionModel?.deleteOne({
+            _id: new ObjectId(req.params.id)
+        })
+        return res.status(200).json({
+            success: true,
+            message: 'Tuition Deleted successfully'
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
 export const StudentController = {
     createTution,
     allTutions,
@@ -290,5 +372,8 @@ export const StudentController = {
     appliedTutorsByTuition,
     studentPayment,
     paymentVerify,
-    paymentHistory
+    paymentHistory,
+    updateTution,
+    rejectTutor,
+    deleteTution
 }

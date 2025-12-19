@@ -19,7 +19,7 @@ const allTutionLists = async (req, res) => {
             {
                 $unwind: '$user'
             }
-        ]).toArray();
+        ]).sort({createdAt: -1}).toArray();
         return res.status(200).json({
             success: true,
             data: results
@@ -171,6 +171,8 @@ const revenewHistory = async (req, res) => {
         });
     }
 }
+
+
 
 
 export const AdminController = {

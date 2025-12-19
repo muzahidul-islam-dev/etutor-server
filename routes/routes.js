@@ -26,12 +26,16 @@ userRoutes.patch('/update-profile', verifyAuth, AuthController.updateProfile)
 
 // Student Routes
 studentRoutes.post('/tuition/create', verifyAuth, authorized('student'), StudentController.createTution);
+studentRoutes.patch('/tuition/update/:id', verifyAuth, authorized('student'), StudentController.updateTution)
+studentRoutes.delete('/tuition/delete/:id', verifyAuth, authorized('student'), StudentController.deleteTution)
 studentRoutes.get('/tuition/all', verifyAuth, authorized('student'), StudentController.allTutions);
 studentRoutes.get('/applied-tutors', verifyAuth, authorized('student'), StudentController.appliedTutors);
 studentRoutes.get('/applied-tutors-by-tuition/:id', verifyAuth, authorized('student'), StudentController.appliedTutorsByTuition);
 studentRoutes.get('/payment/:id', verifyAuth, authorized('student'), StudentController.studentPayment);
 studentRoutes.patch('/payment/:id', StudentController.paymentVerify);
 studentRoutes.get('/payment-history', verifyAuth, authorized('student'), StudentController.paymentHistory);
+studentRoutes.get('/tutor/reject/:id', verifyAuth, authorized('student'), StudentController.rejectTutor);
+
 
 
 // Admin Routes
